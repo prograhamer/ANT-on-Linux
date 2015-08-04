@@ -9,7 +9,9 @@
 
 #define SYNC (0xA4) // SYNC byte that leads messages
 #define ANT_PLUS_FREQUENCY (57)
-#define ANT_PLUS_PERIOD (8070)
+#define ANT_PLUS_PERIOD_406 (8070)
+#define ANT_PLUS_PERIOD_203 (16140)
+#define ANT_PLUS_PERIOD_102 (32280)
 
 // Message types
 #define SET_NETWORK_KEY (0x46)
@@ -22,6 +24,7 @@
 #define OPEN_CHANNEL (0x48)
 #define CLOSE_CHANNEL (0x4C)
 #define OPEN_RX_SCAN_MODE (0x5B)
+#define REQUEST_MESSAGE (0x4D)
 
 // Forward declarations
 
@@ -82,8 +85,14 @@ extern int ANT_CloseChannel(
 		const uchar channel_no
 );
 
-int ANT_OpenRXScanMode(
+extern int ANT_OpenRXScanMode(
 		int fd
+);
+
+extern int ANT_RequestMessage(
+		int fd,
+		const uchar channel_no,
+		const uchar message_id
 );
 
 #endif // __ANT_PROTOCOL_H_

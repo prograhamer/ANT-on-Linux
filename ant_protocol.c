@@ -23,8 +23,7 @@ int ANT_SendMessage(int fd, uchar type, const uchar const *data, const uchar dat
 
 	message[length - 1] = checksum;
 
-	printf("=>");
-	ANT_DebugHex(message, length);
+	ANT_DebugHex(message, length, 0);
 
 	if(0 > write(fd, message, length))
 	{
@@ -141,4 +140,17 @@ int ANT_OpenRXScanMode(
 
 	write_buffer[0] = 0;
 	return ANT_SendMessage(fd, OPEN_RX_SCAN_MODE, write_buffer, 1);
+}
+
+int ANT_RequestMessage(
+		int fd,
+		const uchar channel_no,
+		const uchar message_id)
+{
+	uchar write_buffer[2];
+
+	write_buffer[0] = channel_no;
+	write_buffer[1] = message_id;
+
+	return ANT_SendMessage(fd, REQUEST_MESSAGE, write_buffer, 2);
 }

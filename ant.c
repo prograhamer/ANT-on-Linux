@@ -7,7 +7,6 @@
 #include <signal.h>
 
 const uchar NETWORK_KEY[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-//const uchar NETWORK_KEY[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 static __sig_atomic_t do_exit = 0;
 
@@ -18,7 +17,7 @@ void clean_exit(int signo)
 
 void read_response(int fd)
 {
-	uchar read_buffer[256];
+	uchar read_buffer[8192];
 
 	int n = read(fd, read_buffer, sizeof(read_buffer));
 
@@ -30,10 +29,7 @@ void read_response(int fd)
 			exit(1);
 		}
 	} else if (n > 0) {
-		printf("\t<=");
-		ANT_DebugHex(read_buffer, n);
-	} else {
-		printf("NO DATA READ!\n");
+		ANT_DebugHex(read_buffer, n, 1);
 	}
 }
 
@@ -75,7 +71,7 @@ int main(int argc, char *argv[])
 	ANT_SetRFFrequency(fd, 0, ANT_PLUS_FREQUENCY);
 	read_response(fd);
 
-	ANT_SetChannelPeriod(fd, 0, ANT_PLUS_PERIOD);
+	ANT_SetChannelPeriod(fd, 0, ANT_PLUS_PERIOD_102);
 	read_response(fd);
 
 	ANT_OpenRXScanMode(fd);
@@ -83,7 +79,15 @@ int main(int argc, char *argv[])
 
 	read_loop(fd);
 
-	ANT_UnassignChannel(fd, 0);
+	ANT_RequestMessage(fd, 0, SET_CHANNEL_ID);
+
+	do_exit = 0;
+	read_loop(fd);
+
+  //ANT_UnassignChannel(fd, 0);
+	//read_response(fd);
+
+  ANT_CloseChannel(fd, 0);
 	read_response(fd);
 
 	close(fd);
