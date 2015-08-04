@@ -20,5 +20,6 @@ enum extended_assignment_t {
 typedef unsigned char extended_assignment_t;
 
 typedef unsigned char uchar;
+typedef unsigned short ushort;
 
 #endif // __ANT_TYPES_H_

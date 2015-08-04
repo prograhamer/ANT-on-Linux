@@ -4,8 +4,17 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
 
 const uchar NETWORK_KEY[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+//const uchar NETWORK_KEY[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+static __sig_atomic_t do_exit = 0;
+
+void clean_exit(int signo)
+{
+	if(SIGINT == signo) do_exit = 1;
+}
 
 void read_response(int fd)
 {
@@ -15,17 +24,37 @@ void read_response(int fd)
 
 	if(n < 0)
 	{
-		perror("read");
-		exit(1);
+		if(EINTR != errno)
+		{
+			perror("read");
+			exit(1);
+		}
 	} else if (n > 0) {
+		printf("\t<=");
 		ANT_DebugHex(read_buffer, n);
 	} else {
 		printf("NO DATA READ!\n");
 	}
 }
 
+void read_loop(int fd)
+{
+	while(!do_exit) {
+		read_response(fd);
+		sleep(1);
+	}
+
+	printf("\nExiting...\n");
+}
+
 int main(int argc, char *argv[])
 {
+	if(SIG_ERR == signal(SIGINT, clean_exit))
+	{
+		perror("signal");
+		exit(1);
+	}
+
 	int fd = ANT_OpenSerial("/dev/ttyUSB0");
 
 	if(-1 == fd)
@@ -34,12 +63,27 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	ANT_SetNetworkKey(fd, 0x01, NETWORK_KEY);
-
+	ANT_SetNetworkKey(fd, 0, NETWORK_KEY);
 	read_response(fd);
 
-	ANT_AssignChannel(fd, 0x0, ANT_RX_CHANNEL, 0x01, ANT_BACKGROUND_SCANNING);
+	ANT_AssignChannel(fd, 0, ANT_RX_CHANNEL, 0, 0);
+	read_response(fd);
 
+	ANT_SetChannelID(fd, 0, 0, 0, 0x78, 0);
+	read_response(fd);
+
+	ANT_SetRFFrequency(fd, 0, ANT_PLUS_FREQUENCY);
+	read_response(fd);
+
+	ANT_SetChannelPeriod(fd, 0, ANT_PLUS_PERIOD);
+	read_response(fd);
+
+	ANT_OpenRXScanMode(fd);
+	read_response(fd);
+
+	read_loop(fd);
+
+	ANT_UnassignChannel(fd, 0);
 	read_response(fd);
 
 	close(fd);
