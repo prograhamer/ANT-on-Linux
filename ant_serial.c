@@ -56,7 +56,7 @@ int ANT_SetSerialAttrs(int fd, int baud, int parity)
 	return 0;
 }
 
-int ANT_OpenSerial(const char const *path)
+int ANT_OpenSerial(const char *path)
 {
 	int fd;
 

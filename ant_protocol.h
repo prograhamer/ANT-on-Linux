@@ -31,14 +31,14 @@
 extern int ANT_SendMessage(
 		int fd,
 		uchar type,
-		const uchar const *data,
+		const uchar *data,
 		const uchar data_length
 );
 
 extern int ANT_SetNetworkKey(
 		int fd,
 		const uchar network_no,
-		const uchar const *network_key
+		const uchar *network_key
 );
 
 extern int ANT_AssignChannel(

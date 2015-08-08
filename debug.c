@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void ANT_DebugHex(const uchar const *data, int length, uchar input)
+void ANT_DebugHex(const uchar *data, int length, uchar input)
 {
 	for(int i = 0; i < length; i++)
 	{

@@ -11,7 +11,7 @@ extern int ANT_SetSerialAttrs(
 );
 
 extern int ANT_OpenSerial(
-		const char const *path
+		const char *path
 );
 
 #endif // __ANT_SERIAL_H_

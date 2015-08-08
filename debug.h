@@ -4,7 +4,7 @@
 #define __ANT_DEBUG_H_
 
 extern void ANT_DebugHex(
-		const uchar const *data,
+		const uchar *data,
 		int length,
 		uchar input
 );

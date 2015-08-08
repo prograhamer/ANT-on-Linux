@@ -8,7 +8,7 @@
 
 const uchar NETWORK_KEY[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-static __sig_atomic_t do_exit = 0;
+static sig_atomic_t do_exit = 0;
 
 void clean_exit(int signo)
 {
